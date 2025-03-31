@@ -1,0 +1,42 @@
+# main links
+main:
+  - title: "Home"
+    url: https://moset1.github.io/
+
+  - title: "About"
+    url: /about/
+
+  - title: "GitHub"
+    url: https://github.com/moset1
+
+  # - title: "Projects"
+  #   url: /projects/
+
+  - title: "Categories"
+    url: /categories/
+
+# sidebar navigation (categories)
+# 2022.09.24 sidebar ver2.0 : main-sub version
+categories:
+  - title: "Today I Learned"
+    children:
+      - title: "CS"
+        url: /categories/cs/
+      - title: "Algorithm"
+        url: /categories/algorithm/
+      - title: "Language"
+        url: /categories/language/
+      - title: "ETC"
+        url: /categories/etc/
+
+  - title: "Diary"
+    children:
+      - title: "Reflection"
+        url: /categories/reflection/
+      - title: "Essay"
+        url: /categories/essay/
+
+  - title: "Portfolio"
+    children:
+      - title: "Resume"
+        url: /categories/resume/

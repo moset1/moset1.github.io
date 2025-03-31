@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://moset1.github.io/sitemap.xml
