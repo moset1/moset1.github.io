@@ -21,4 +21,4 @@ last_modified_at: 2025-04-01
 
 ## Java 정리
 
-![java basic 1](https://1drv.ms/i/c/d1ab106aee34610f/IQRDkm3htt29RqbyLjLb_qhiAZdei9lXOuN3qbO7SntGMZQ?width=4488&height=2904)
+<iframe src="https://1drv.ms/b/c/d1ab106aee34610f/IQR0QFzCH42jSYm6jQusaPTuAWmWlazifcVKIHam-tIsclI" width="98" height="120" frameborder="0" scrolling="no"></iframe>
