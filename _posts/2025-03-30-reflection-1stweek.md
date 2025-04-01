@@ -24,7 +24,7 @@ last_modified_at: 2025-03-30
 
 ## 1. float의 데이터 저장 방식
 
-![floating point format](/assets/images/posts_img/floating_point_format.png)
+![floating point format](https://1drv.ms/i/c/d1ab106aee34610f/IQT1PkyqmuMsSafutyQBMfD6ATRrkXD3Ik-KpIvbAij9yg8?width=1024)
 
 float은 데이터를 부호(Sign), 지수(Exponent), 가수(Mantissa)로 나누어 저장한다. 이는 IEEE 754 표준에 따라 이루어진다.
 
