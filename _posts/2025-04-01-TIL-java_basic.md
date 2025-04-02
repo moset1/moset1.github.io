@@ -18,6 +18,9 @@ last_modified_at: 2025-04-01
 
 # 📜변수부터 배열까지 손글씨 정리
 
+PDF 파일을 불러와야하므로 조금만 기다려주세요. 
+
+[PDF 파일 링크] https://1drv.ms/b/c/d1ab106aee34610f/IQR0QFzCH42jSYm6jQusaPTuAWmWlazifcVKIHam-tIsclI"
 
 ## Java 정리
 
