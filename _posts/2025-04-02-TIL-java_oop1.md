@@ -20,6 +20,6 @@ last_modified_at: 2025-04-02
 
 PDF 파일을 불러와야하므로 조금만 기다려주세요.
 
-[PDF 파일 링크] (https://1drv.ms/b/c/d1ab106aee34610f/IQTHsbi3VpRWS60Bx72KVEXkAXLtFShUaHuxn0DTtDFwDzE)
+[PDF 파일 링크](https://1drv.ms/b/c/d1ab106aee34610f/IQTHsbi3VpRWS60Bx72KVEXkAXLtFShUaHuxn0DTtDFwDzE)
 ## Java 정리
 <iframe src="https://1drv.ms/b/c/d1ab106aee34610f/IQTHsbi3VpRWS60Bx72KVEXkAXLtFShUaHuxn0DTtDFwDzE" width="800" height="1200" frameborder="0" scrolling="no"></iframe>
