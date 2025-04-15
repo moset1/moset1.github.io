@@ -1,6 +1,6 @@
 ---
 title: "[커널아카데미] 백엔드 부트캠프 3주차 - 할게 너무 많네"
-excerpt: "2주차 회고"
+excerpt: "3주차 회고"
 
 categories:
   - Reflection
