@@ -5,7 +5,7 @@ excerpt: "2주차 회고"
 categories:
   - Reflection
 tags:
-  - [커널아카데미, 패스트캠퍼스]
+  - ["커널아카데미", "패스트캠퍼스"]
 
 permalink: /reflection/2ndweek/
 
