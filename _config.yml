@@ -23,7 +23,7 @@ title: "Breaking Moses' Mind" # 상단 헤더에 보이는 블로그 명
 title_separator: "&#124;"
 subtitle: # site tagline that appears below site title in masthead
 name: "Moses" # 블로그 닉네임 설정
-description: "this is my blog!" # 블로그 설명
+description: "this is blog about Moses' growth!" # 블로그 설명
 url: "https://moset1.github.io" # 블로그 URL
 baseurl: # the subpath of your site, e.g. "/blog"
 repository: "moset1/moset1.github.io" # GitHub Repo 이름
@@ -105,9 +105,9 @@ author:
   email            : "kimmose98@naver.com"
 
   links: # 사이트 링크
-#     - label: "Email"
-#       icon: "fas fa-fw fa-envelope-square"
-#       # url: "mailto:your.name@email.com"
+     - label: "Email"
+       icon: "fas fa-fw fa-envelope-square"
+       url: "mailto:kimmose98@naver.com"
 #     - label: "Website"
 #       icon: "fas fa-fw fa-link"
 #       # url: "https://your-website.com"
@@ -117,9 +117,9 @@ author:
 #     - label: "Facebook"
 #       icon: "fab fa-fw fa-facebook-square"
 #       # url: "https://facebook.com/"
-#     - label: "GitHub"
-#       icon: "fab fa-fw fa-github"
-#       url: "https://github.com/"
+     - label: "GitHub"
+       icon: "fab fa-fw fa-github"
+       url: "https://github.com/moset1"
 #     - label: "Instagram"
 #       icon: "fab fa-fw fa-instagram"
 #       url: "https://www.instagram.com/"
@@ -225,7 +225,7 @@ whitelist:
   - jekyll-paginate
   - jekyll-sitemap
   - jekyll-gist
-  # - jekyll-feed
+   - jekyll-feed
   - jekyll-include-cache
 
 # Archives
