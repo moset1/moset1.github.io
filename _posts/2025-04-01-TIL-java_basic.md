@@ -20,7 +20,7 @@ last_modified_at: 2025-04-01
 
 PDF 파일을 불러와야하므로 조금만 기다려주세요. 
 
-
+도움이 되셨다면 댓글을 달아주세요!
 ## Java 정리
 
 <iframe src="https://1drv.ms/b/c/d1ab106aee34610f/IQR0QFzCH42jSYm6jQusaPTuAWmWlazifcVKIHam-tIsclI" width="1200" height="800" frameborder="0" scrolling="no"></iframe>
