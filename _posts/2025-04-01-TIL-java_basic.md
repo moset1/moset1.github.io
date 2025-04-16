@@ -4,8 +4,7 @@ excerpt: "Java의 정석 2장부터 5장까지 노트 필기"
 
 categories:
   - Language
-tags:
-  - ["자바의 정석", "Java"]
+tags: ["자바의 정석", "Java"]
 
 permalink: /language/javabasic/
 

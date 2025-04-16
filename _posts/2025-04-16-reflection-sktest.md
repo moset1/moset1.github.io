@@ -4,8 +4,7 @@ excerpt: "SK 그룹 인성 검사 회고"
 
 categories:
   - Reflection
-tags:
-  - ["SK 인성검사"]
+tags: ["SK 인성검사"]
 
 permalink: /reflection/sktest/
 

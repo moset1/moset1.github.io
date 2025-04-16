@@ -4,8 +4,7 @@ excerpt: "Java의 정석 9장 노트 정리"
 
 categories:
   - Language
-tags:
-  - ["자바의 정석", "Java"]
+tags: ["자바의 정석", "Java"]
 
 permalink: /language/usefulclass/
 
