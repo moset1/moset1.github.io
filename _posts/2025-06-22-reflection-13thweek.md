@@ -1,12 +1,12 @@
 ---
 title: "[커널아카데미] 백엔드 부트캠프 13주차 - 기초부터 차근차근"
-excerpt: "12주차 회고"
+excerpt: "13주차 회고"
 
 categories:
   - Reflection
 tags: ["커널아카데미", "패스트캠퍼스"]
 
-permalink: /reflection/12thweek/
+permalink: /reflection/13thweek/
 
 toc: true
 toc_sticky: true
