@@ -1,44 +1,63 @@
-name: Build and Deploy Jekyll site to GitHub Pages
+# 워크플로우의 이름
+name: Deploy Jekyll site to Pages
 
 on:
+  # 'main' 브랜치에 push 이벤트가 발생할 때마다 실행됩니다.
   push:
-    branches:
-      - main # main 브랜치에 푸시될 때마다 실행됩니다.
+    branches: ["main"]
+
+  # Actions 탭에서 수동으로 이 워크플로우를 실행할 수 있도록 합니다.
+  workflow_dispatch:
+
+# GITHUB_TOKEN의 권한을 설정하여 GitHub Pages에 배포할 수 있도록 합니다.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 동시에 하나의 배포만 실행되도록 설정합니다.
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
 
 jobs:
-  jekyll-build:
+  # 빌드 잡
+  build:
     runs-on: ubuntu-latest
     steps:
+      # 1. 저장소의 코드를 체크아웃합니다. (최신 버전 v4 사용)
       - name: Checkout
-        uses: actions/checkout@v3
-
+        uses: actions/checkout@v4
+      
+      # 2. Ruby 환경을 설정하고 Gemfile의 의존성을 설치/캐시합니다.
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.0' # Gemfile에 맞는 Ruby 버전을 사용하세요.
           bundler-cache: true # 'bundle install'을 자동으로 실행하고 캐시합니다.
-
+      
+      # 3. GitHub Pages를 설정합니다.
       - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v3
-
+        uses: actions/configure-pages@v5
+      
+      # 4. Jekyll을 사용하여 사이트를 빌드합니다.
       - name: Build with Jekyll
-        # jekyll-archives 같은 커스텀 플러그인을 사용합니다.
-        run: bundle exec jekyll build --source . --destination ./_site --baseurl "${{ steps.pages.outputs.base_path }}"
-
+        # _config.yml의 baseurl 설정을 자동으로 사용합니다.
+        run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+      
+      # 5. 빌드 결과물(artifact)을 업로드하여 배포 잡에서 사용할 수 있도록 합니다.
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v3
 
+  # 배포 잡
   deploy:
-    needs: jekyll-build
-    permissions:
-      pages: write
-      id-token: write
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
+    needs: build # 빌드 잡이 성공해야 실행됩니다.
     steps:
+      # 6. 업로드된 결과물을 GitHub Pages에 배포합니다. (최신 버전 v4 사용)
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
