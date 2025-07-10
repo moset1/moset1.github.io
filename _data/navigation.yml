@@ -26,6 +26,8 @@ categories:
         url: /categories/algorithm/
       - title: "Language"
         url: /categories/language/
+      - title: "파헤치기"
+        url: /categories/unpacking/
       - title: "ETC"
         url: /categories/etc/
 
