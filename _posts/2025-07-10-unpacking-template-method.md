@@ -3,7 +3,7 @@ title: "[디자인 패턴 시리즈] Template Method 파헤치기"
 excerpt: "디자인 패턴 중 하나인 Template Method의 배경과 개념, 원칙을 예제로 알아봅니다."
 
 categories:
-  - Unpacking
+  - 파헤치기
 tags: ["디자인패턴", "템플릿 메서드", "Java 언어로 배우는 디자인 패턴 입문", "쉽게 배워 바로 써먹는 디자인 패턴"]
 
 permalink: /unpacking/template-method/
