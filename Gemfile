@@ -13,6 +13,8 @@ group :jekyll_plugins do
   
   # 태그 및 카테고리 아카이브 페이지 생성을 위한 필수 플러그인
   gem "jekyll-archives"
+
+  gem "jekyll-seo-tag"
 end
 
 # jekyll-sitemap은 gemspec에 이미 포함되어 있지만, 

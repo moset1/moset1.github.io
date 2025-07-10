@@ -1,6 +1,6 @@
 ---
 title: "[디자인 패턴 시리즈] Template Method 파헤치기"
-excerpt: "Template Method에 대해서 제대로 알아보자구요"
+excerpt: "디자인 패턴 중 하나인 Template Method의 배경과 개념, 원칙을 예제로 알아봅니다."
 
 categories:
   - Unpacking
