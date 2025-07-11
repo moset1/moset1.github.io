@@ -3,7 +3,7 @@ title: "[JPA 시리즈] JPA는 왜 나왔을까? — MyBatis를 겪으며 느낀
 excerpt: "디자인 패턴 중 하나인 Template Method의 배경과 개념, 원칙을 예제로 알아봅니다."
 
 categories:
-  - 파헤치기
+  - unpacking
 tags: ["JPA", "MyBatis", "자바 ORM 표준 JPA 프로그래밍"]
 
 permalink: /unpacking/template-method/
