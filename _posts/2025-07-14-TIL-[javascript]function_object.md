@@ -58,7 +58,7 @@ console.log(sayHello.language); // "English"
 ```
 
 위 예시처럼 함수는 코드 블록일 뿐만 아니라, 객체처럼 프로퍼티를 가질 수 있습니다.
-JavaScript에서는 \*\*함수도 일급 객체(First-Class Object)\*\*로 취급됩니다.
+JavaScript에서는 함수도 일급 객체(First-Class Object)로 취급됩니다.
 
 ### 함수는 변수에 할당할 수 있습니다
 
