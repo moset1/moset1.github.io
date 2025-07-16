@@ -1,5 +1,5 @@
 ---
-title: "[네트워크] 가상머신이 접속되지 않는 이유로 알아보는 네트워크 : NAT, Bridged의 이해"
+title: "[네트워크] 가상머신에 접속되지 않는 이유로 알아보는 네트워크 : NAT, Bridged의 이해"
 excerpt: "NAT와 Bridged Adapter의 동작 방식과 차이를 통해 가상머신 네트워크 문제를 해결합니다."
 categories:
   - Unpacking
