@@ -151,3 +151,8 @@ physical address = virtual address + base
 
 주소 공간의 각 가상 페이지에 대한 물리 메모리 위치 기록을 위하여 운영체제는 프로세스 마다 페이지 테이블 (page table) 이라는 자료 구조를 유지한다. 페이지 테이블의 주요 역할은 주소 공간의 가상 페이지 주소 변환(address translation) 정보를 저장하는 것이다. 각 페이지가 저장된 물리 메모리의 위치가 어디인지 알려준다.
 이러한 페이지 테이블은 프로세스마다 존재한다. 프로세스를 새로 실행해야 한다면, 운영체제는 이 프로세스를 위한 다른 페이지 테이블이 필요하다. 새 프로세스의 가상 페이지는 다른 물리 페이지에 존재하기 떄문이다.
+
+
+## Reference
+
+- [Operating Systems: Three Easy Pieces (OSTEP)](https://pages.cs.wisc.edu/~remzi/OSTEP/) by Remzi H. Arpaci-Dusseau and Andrea C. Arpaci-Dusseau
