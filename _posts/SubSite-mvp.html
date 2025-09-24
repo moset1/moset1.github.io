@@ -1,0 +1,643 @@
+---
+layout: post
+title: "My MVP App"
+
+---
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>✨ 키워드 알림 AI 서비스 (사용자 계정)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <!-- Chosen Palette: Cool Neutrals with Blue Accents -->
+  <!-- Application Structure Plan: The application now has two main states: authenticated and unauthenticated. Authenticated users see a two-column dashboard. A left sidebar is dedicated to category management and filtering, improving navigation. The main content area on the right contains the subscription form, a filtered subscription list, and a filtered notification log. This structure provides clear separation of concerns and a more scalable, desktop-like user experience. -->
+  <!-- Visualization & Content Choices: Report Info: User accounts & categorization -> Goal: Organize/Inform/Interact -> Viz: HTML Forms, Dynamic Lists, Filter Buttons, Modal Dialog -> Interaction: Login/logout, Create/Filter categories, Edit keywords in a modal, Assign subscriptions to categories -> Justification: The new sidebar layout is a standard, user-friendly pattern for navigation. The introduction of a modal for editing subscriptions prevents cluttering the main list view and provides a focused editing experience. Dynamic button text and filtered notifications provide crucial user feedback. -->
+  <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+  <style>
+    body {
+      font-family: 'Noto Sans KR', sans-serif;
+      background-color: #f3f4f6;
+    }
+    .btn {
+      transition: all 0.2s ease-in-out;
+    }
+    .btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .gemini-btn {
+      background: linear-gradient(to right, #4f46e5, #818cf8);
+      color: white;
+    }
+    .summary-content {
+      display: none;
+      background-color: #f0f9ff;
+      border-left: 4px solid #3b82f6;
+      padding: 1rem;
+      margin-top: 0.75rem;
+      border-radius: 0.25rem;
+    }
+    .spinner {
+      border: 2px solid #f3f3f3;
+      border-top: 2px solid #3498db;
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 8px;
+    }
+    .category-btn.active {
+      background-color: #3b82f6;
+      color: white;
+      font-weight: bold;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    /* Modal styles */
+    .modal-overlay {
+      transition: opacity 0.3s ease;
+    }
+    .modal-content {
+      transition: transform 0.3s ease;
+    }
+  </style>
+</head>
+<body class="text-gray-800">
+<!-- Auth View -->
+<div id="auth-view" class="min-h-screen flex items-center justify-center bg-gray-100">
+  <div class="max-w-md w-full bg-white p-8 rounded-xl shadow-lg">
+    <!-- Login Form -->
+    <div id="login-form-container">
+      <h2 class="text-2xl font-bold text-center mb-6">로그인</h2>
+      <form id="login-form" class="space-y-4">
+        <div id="login-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded"></div>
+        <input type="text" id="login-username" placeholder="사용자 이름" required class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        <input type="password" id="login-password" placeholder="비밀번호" required class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        <button type="submit" class="btn w-full py-2 px-4 text-white bg-blue-600 hover:bg-blue-700 rounded-md">로그인</button>
+      </form>
+      <p class="text-center text-sm mt-4">계정이 없으신가요? <a href="#" id="show-signup" class="font-medium text-blue-600 hover:text-blue-500">회원가입</a></p>
+      <p class="text-center text-xs mt-4 text-red-500">⚠️ MVP 데모용입니다. 실제 비밀번호를 사용하지 마세요.</p>
+    </div>
+    <!-- Signup Form -->
+    <div id="signup-form-container" class="hidden">
+      <h2 class="text-2xl font-bold text-center mb-6">회원가입</h2>
+      <form id="signup-form" class="space-y-4">
+        <div id="signup-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded"></div>
+        <input type="text" id="signup-username" placeholder="사용자 이름" required class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        <input type="password" id="signup-password" placeholder="비밀번호" required class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+        <button type="submit" class="btn w-full py-2 px-4 text-white bg-blue-600 hover:bg-blue-700 rounded-md">회원가입</button>
+      </form>
+      <p class="text-center text-sm mt-4">이미 계정이 있으신가요? <a href="#" id="show-login" class="font-medium text-blue-600 hover:text-blue-500">로그인</a></p>
+    </div>
+  </div>
+</div>
+
+<!-- Main App View -->
+<div id="app-view" class="hidden container mx-auto p-4 md:p-8 max-w-7xl">
+  <header class="flex justify-between items-center mb-10 col-span-4">
+    <div>
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-900">✨ 키워드 알림 AI 서비스</h1>
+      <p class="mt-1 text-lg text-gray-600"><span id="welcome-username" class="font-bold"></span>님, 환영합니다.</p>
+    </div>
+    <button id="logout-btn" class="btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">로그아웃</button>
+  </header>
+
+  <div class="md:grid md:grid-cols-4 md:gap-8">
+    <!-- Left Sidebar for Categories -->
+    <aside class="md:col-span-1 mb-8 md:mb-0">
+      <div class="bg-white p-4 rounded-xl shadow-lg sticky top-8">
+        <h2 class="text-xl font-bold mb-4">카테고리</h2>
+        <div class="flex items-center space-x-2 mb-4">
+          <input type="text" id="category-name" placeholder="새 카테고리" class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm">
+          <button id="add-category-btn" class="btn bg-blue-600 text-white px-3 py-2 rounded-md whitespace-nowrap text-sm">추가</button>
+        </div>
+        <nav id="category-filters" class="flex flex-col space-y-1">
+          <!-- Category filter buttons will be dynamically inserted here -->
+        </nav>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="md:col-span-3 space-y-12">
+      <div id="api-error" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <strong class="font-bold">오류:</strong>
+        <span class="block sm:inline" id="api-error-message"></span>
+      </div>
+
+      <!-- Section 1: Add Subscription -->
+      <section id="add-subscription-section">
+        <div class="bg-white p-6 rounded-xl shadow-lg">
+          <h2 class="text-2xl font-bold mb-4">새 구독 추가</h2>
+          <form id="subscription-form" class="space-y-4">
+            <div>
+              <label for="subscription-category" class="block text-sm font-medium text-gray-700">카테고리 선택</label>
+              <select id="subscription-category" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+              </select>
+            </div>
+            <div>
+              <label for="site-url" class="block text-sm font-medium text-gray-700">블로그 RSS 피드 URL</label>
+              <input type="url" id="site-url" placeholder="https://d2.naver.com/d2.atom" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+              <p class="mt-1 text-xs text-gray-500">/rss, /feed, /atom 등을 붙이면 RSS 주소를 찾을 수 있습니다.</p>
+            </div>
+            <div>
+              <label for="keywords" class="block text-sm font-medium text-gray-700">키워드 (쉼표로 구분)</label>
+              <div class="flex items-center space-x-2 mt-1">
+                <input type="text" id="keywords" placeholder="AI, MSA" required class="block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <button type="button" id="suggest-keywords-btn" class="btn gemini-btn px-3 py-2 rounded-md shadow-sm text-sm font-medium whitespace-nowrap">✨ 키워드 추천</button>
+              </div>
+            </div>
+            <button type="submit" class="btn w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+              구독 추가
+            </button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Section 2: Subscription List -->
+      <section id="subscription-list-section">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-2xl font-bold">내 구독 목록</h2>
+          <button id="check-updates-btn" class="btn py-2 px-4 rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 flex items-center">
+            <span id="check-updates-spinner" class="hidden spinner"></span>
+            <span id="check-updates-text"></span>
+          </button>
+        </div>
+        <div id="subscription-list" class="bg-white p-4 rounded-xl shadow-lg space-y-3 min-h-[100px]">
+        </div>
+      </section>
+
+      <!-- Section 3: Notifications -->
+      <section id="notification-section">
+        <h2 class="text-2xl font-bold mb-4">새 알림 (<span id="current-category-name-notif">전체</span>)</h2>
+        <div id="notification-list" class="bg-white p-4 rounded-xl shadow-lg space-y-3 min-h-[150px]">
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- Edit Subscription Modal -->
+<div id="edit-modal" class="modal-overlay fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 hidden opacity-0">
+  <div class="modal-content bg-white rounded-lg shadow-xl p-6 w-full max-w-md transform scale-95">
+    <h2 class="text-2xl font-bold mb-4">구독 수정</h2>
+    <form id="edit-subscription-form">
+      <input type="hidden" id="edit-subscription-id">
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-gray-700">RSS 피드 URL (수정 불가)</label>
+        <p id="edit-site-url" class="mt-1 text-gray-800 font-mono bg-gray-100 p-2 rounded"></p>
+      </div>
+      <div class="mb-6">
+        <label for="edit-keywords" class="block text-sm font-medium text-gray-700">키워드 (쉼표로 구분)</label>
+        <input type="text" id="edit-keywords" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+      </div>
+      <div class="flex justify-end space-x-3">
+        <button type="button" id="cancel-edit-btn" class="btn bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded">취소</button>
+        <button type="submit" class="btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">저장</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // --- GLOBAL STATE & DOM ELEMENTS ---
+    let currentUser = null;
+    let users = JSON.parse(localStorage.getItem('users')) || [];
+    let subscriptions = [];
+    let notifications = [];
+    let categories = [];
+    let activeCategoryId = 'all';
+
+    const authView = document.getElementById('auth-view');
+    const appView = document.getElementById('app-view');
+
+    const loginForm = document.getElementById('login-form');
+    const signupForm = document.getElementById('signup-form');
+    const loginError = document.getElementById('login-error');
+    const signupError = document.getElementById('signup-error');
+    const showSignupBtn = document.getElementById('show-signup');
+    const showLoginBtn = document.getElementById('show-login');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    const subscriptionForm = document.getElementById('subscription-form');
+    const siteUrlInput = document.getElementById('site-url');
+    const keywordsInput = document.getElementById('keywords');
+    const subscriptionList = document.getElementById('subscription-list');
+    const notificationList = document.getElementById('notification-list');
+    const checkUpdatesBtn = document.getElementById('check-updates-btn');
+    const suggestKeywordsBtn = document.getElementById('suggest-keywords-btn');
+    const errorDiv = document.getElementById('api-error');
+    const errorMsgSpan = document.getElementById('api-error-message');
+    const checkUpdatesSpinner = document.getElementById('check-updates-spinner');
+    const checkUpdatesText = document.getElementById('check-updates-text');
+
+    const categoryNameInput = document.getElementById('category-name');
+    const addCategoryBtn = document.getElementById('add-category-btn');
+    const categoryFilters = document.getElementById('category-filters');
+    const subscriptionCategorySelect = document.getElementById('subscription-category');
+    const currentCategoryNameNotifSpan = document.getElementById('current-category-name-notif');
+
+    const editModal = document.getElementById('edit-modal');
+    const editSubscriptionForm = document.getElementById('edit-subscription-form');
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+
+    // --- LOCALSTORAGE HELPERS ---
+    const saveUsers = () => localStorage.setItem('users', JSON.stringify(users));
+    const saveUserSpecificData = () => {
+      if (!currentUser) return;
+      localStorage.setItem(`subscriptions_${currentUser}`, JSON.stringify(subscriptions));
+      localStorage.setItem(`notifications_${currentUser}`, JSON.stringify(notifications));
+      localStorage.setItem(`categories_${currentUser}`, JSON.stringify(categories));
+    };
+    const loadUserSpecificData = () => {
+      if (!currentUser) return;
+      subscriptions = JSON.parse(localStorage.getItem(`subscriptions_${currentUser}`)) || [];
+      notifications = JSON.parse(localStorage.getItem(`notifications_${currentUser}`)) || [];
+      categories = JSON.parse(localStorage.getItem(`categories_${currentUser}`)) || [];
+    };
+
+    // --- UI & RENDER LOGIC ---
+    const showAppView = () => { authView.classList.add('hidden'); appView.classList.remove('hidden'); };
+    const showAuthView = () => { appView.classList.add('hidden'); authView.classList.remove('hidden'); };
+
+    const initializeAppForUser = () => {
+      loadUserSpecificData();
+      document.getElementById('welcome-username').textContent = currentUser;
+      showAppView();
+      renderAll();
+    };
+
+    const renderAll = () => {
+      renderCategories();
+      renderSubscriptions();
+      renderNotifications();
+      updateCheckButtonText();
+    };
+
+    // --- AUTHENTICATION LOGIC ---
+    const handleLogin = (e) => { e.preventDefault(); /* ... same as before ... */
+      const username = loginForm['login-username'].value;
+      const password = loginForm['login-password'].value;
+      const user = users.find(u => u.username === username && u.password === password);
+      if (user) {
+        currentUser = username;
+        localStorage.setItem('currentUser', currentUser);
+        initializeAppForUser();
+      } else {
+        loginError.textContent = '사용자 이름 또는 비밀번호가 올바르지 않습니다.';
+        loginError.classList.remove('hidden');
+      }
+    };
+    const handleSignup = (e) => { e.preventDefault(); /* ... same as before ... */
+      const username = signupForm['signup-username'].value;
+      const password = signupForm['signup-password'].value;
+      if (users.some(u => u.username === username)) {
+        signupError.textContent = '이미 존재하는 사용자 이름입니다.';
+        signupError.classList.remove('hidden');
+      } else {
+        users.push({ username, password });
+        saveUsers();
+        currentUser = username;
+        localStorage.setItem('currentUser', currentUser);
+        initializeAppForUser();
+      }
+    };
+    const handleLogout = () => { /* ... same as before ... */
+      currentUser = null;
+      localStorage.removeItem('currentUser');
+      showAuthView();
+      loginForm.reset();
+      signupForm.reset();
+    };
+
+    // --- CATEGORY LOGIC ---
+    const handleAddCategory = () => {
+      const name = categoryNameInput.value.trim();
+      if (name && !categories.some(c => c.name === name)) {
+        categories.push({ id: Date.now(), name });
+        saveUserSpecificData();
+        renderCategories();
+        categoryNameInput.value = '';
+      }
+    };
+
+    const renderCategories = () => {
+      categoryFilters.innerHTML = '<button data-id="all" class="category-btn btn w-full text-left p-2 rounded-md hover:bg-gray-100 font-semibold">🗂️ 전체</button>';
+      categories.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.dataset.id = cat.id;
+        btn.textContent = cat.name;
+        btn.className = "category-btn btn w-full text-left p-2 rounded-md hover:bg-gray-100";
+        categoryFilters.appendChild(btn);
+      });
+      document.querySelectorAll('.category-btn').forEach(btn => {
+        if(btn.dataset.id === String(activeCategoryId)) btn.classList.add('active');
+      });
+
+      subscriptionCategorySelect.innerHTML = '<option value="" disabled selected>카테고리를 선택하세요</option>';
+      categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat.id;
+        option.textContent = cat.name;
+        subscriptionCategorySelect.appendChild(option);
+      });
+    };
+
+    categoryFilters.addEventListener('click', e => {
+      if (e.target.matches('.category-btn')) {
+        activeCategoryId = e.target.dataset.id === 'all' ? 'all' : Number(e.target.dataset.id);
+        renderAll();
+      }
+    });
+
+    // --- SUBSCRIPTION & NOTIFICATION LOGIC ---
+    const renderSubscriptions = () => {
+      subscriptionList.innerHTML = '';
+      const filteredSubs = activeCategoryId === 'all' ? subscriptions : subscriptions.filter(s => s.categoryId === activeCategoryId);
+
+      if (filteredSubs.length === 0) {
+        subscriptionList.innerHTML = `<p class="text-center text-gray-500 py-4">이 카테고리에 추가된 구독이 없습니다.</p>`;
+        return;
+      }
+      filteredSubs.forEach(sub => {
+        const div = document.createElement('div');
+        div.className = 'p-3 border rounded-lg flex justify-between items-center bg-gray-50';
+        div.innerHTML = `
+                    <div class="flex-grow overflow-hidden mr-2">
+                        <p class="font-semibold truncate">${sub.url}</p>
+                        <p class="text-sm text-gray-600 truncate">키워드: ${sub.keywords.join(', ')}</p>
+                    </div>
+                    <div class="flex-shrink-0 space-x-2">
+                        <button data-id="${sub.id}" class="edit-btn text-blue-500 hover:text-blue-700 font-semibold text-sm">수정</button>
+                        <button data-id="${sub.id}" class="delete-btn text-red-500 hover:text-red-700 font-semibold text-sm">삭제</button>
+                    </div>
+                `;
+        subscriptionList.appendChild(div);
+      });
+    };
+
+    const renderNotifications = () => {
+      const categoryName = activeCategoryId === 'all' ? '전체' : categories.find(c => c.id === activeCategoryId)?.name || '전체';
+      currentCategoryNameNotifSpan.textContent = categoryName;
+
+      notificationList.innerHTML = '';
+      const filteredNotifs = activeCategoryId === 'all' ? notifications : notifications.filter(n => n.categoryId === activeCategoryId);
+
+      if (filteredNotifs.length === 0) {
+        notificationList.innerHTML = `<p class="text-center text-gray-500 py-4">이 카테고리의 새 알림이 없습니다.</p>`;
+        return;
+      }
+      [...filteredNotifs].sort((a, b) => b.timestamp - a.timestamp).forEach(notif => {
+        const div = document.createElement('div');
+        div.className = 'p-3 border rounded-lg bg-white';
+        div.innerHTML = `
+                    <p class="text-sm text-gray-500">[<span class="font-medium text-green-700">${notif.keyword}</span>] 키워드 발견!</p>
+                    <a href="${notif.link}" target="_blank" class="font-semibold text-blue-600 hover:underline">${notif.title}</a>
+                    <p class="text-xs text-gray-400 mb-2">${new Date(notif.timestamp).toLocaleString()}</p>
+                    <button data-id="${notif.id}" class="summary-btn btn gemini-btn text-xs px-2 py-1 rounded-md">✨ AI 요약 보기</button>
+                    <div id="summary-${notif.id}" class="summary-content text-sm text-gray-700"></div>
+                `;
+        notificationList.appendChild(div);
+      });
+    };
+
+    const handleAddSubscription = (e) => { /* ... same as before ... */
+      e.preventDefault();
+      hideError();
+      const url = siteUrlInput.value.trim();
+      const keywords = keywordsInput.value.split(',').map(k => k.trim()).filter(Boolean);
+      const categoryId = Number(subscriptionCategorySelect.value);
+
+      if (url && keywords.length > 0 && categoryId) {
+        const newSubscription = { id: Date.now(), url, keywords, categoryId };
+        subscriptions.push(newSubscription);
+        saveUserSpecificData();
+        renderSubscriptions();
+        subscriptionForm.reset();
+      } else {
+        showError("카테고리, URL, 키워드를 모두 입력해주세요.");
+      }
+    };
+
+    const handleDeleteSubscription = (id) => {
+      subscriptions = subscriptions.filter(sub => sub.id !== id);
+      saveUserSpecificData();
+      renderSubscriptions();
+    };
+
+    // --- EDIT MODAL LOGIC ---
+    const openEditModal = (id) => {
+      const sub = subscriptions.find(s => s.id === id);
+      if (!sub) return;
+      document.getElementById('edit-subscription-id').value = sub.id;
+      document.getElementById('edit-site-url').textContent = sub.url;
+      document.getElementById('edit-keywords').value = sub.keywords.join(', ');
+      editModal.classList.remove('hidden');
+      setTimeout(() => {
+        editModal.classList.remove('opacity-0');
+        editModal.querySelector('.modal-content').classList.remove('scale-95');
+      }, 10);
+    };
+
+    const closeEditModal = () => {
+      editModal.classList.add('opacity-0');
+      editModal.querySelector('.modal-content').classList.add('scale-95');
+      setTimeout(() => editModal.classList.add('hidden'), 300);
+    };
+
+    const handleSaveSubscription = (e) => {
+      e.preventDefault();
+      const id = Number(document.getElementById('edit-subscription-id').value);
+      const keywords = document.getElementById('edit-keywords').value.split(',').map(k => k.trim()).filter(Boolean);
+      const subIndex = subscriptions.findIndex(s => s.id === id);
+      if (subIndex > -1 && keywords.length > 0) {
+        subscriptions[subIndex].keywords = keywords;
+        saveUserSpecificData();
+        renderSubscriptions();
+        closeEditModal();
+      }
+    };
+
+    subscriptionList.addEventListener('click', e => {
+      if (e.target.matches('.delete-btn')) {
+        const id = Number(e.target.dataset.id);
+        if (confirm('이 구독을 삭제하시겠습니까?')) {
+          handleDeleteSubscription(id);
+        }
+      }
+      if (e.target.matches('.edit-btn')) {
+        const id = Number(e.target.dataset.id);
+        openEditModal(id);
+      }
+    });
+
+    // --- API CALLS & UPDATES ---
+    const showError = (message) => { errorMsgSpan.textContent = message; errorDiv.classList.remove('hidden'); };
+    const hideError = () => errorDiv.classList.add('hidden');
+    const callGeminiAPI = async (prompt, button) => { /* ... same as before ... */
+      const originalText = button ? button.innerHTML : '';
+      if (button) {
+        button.disabled = true;
+        button.innerHTML = `<div class="spinner"></div> 요청 중...`;
+      }
+      hideError();
+
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+      const payload = { contents: [{ parts: [{ text: prompt }] }] };
+
+      try {
+        const response = await fetch(apiUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!response.ok) {
+          const errorBody = await response.json();
+          throw new Error(`API 요청 실패: ${response.status} - ${errorBody.error.message}`);
+        }
+        const result = await response.json();
+        const text = result.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (!text) { throw new Error("API로부터 유효한 응답을 받지 못했습니다."); }
+        return text;
+      } catch (error) {
+        console.error("Gemini API Error:", error);
+        showError(error.message);
+        return null;
+      } finally {
+        if (button) { button.disabled = false; button.innerHTML = originalText; }
+      }
+    };
+
+    const updateCheckButtonText = () => {
+      const categoryName = activeCategoryId === 'all' ? '전체' : categories.find(c => c.id === activeCategoryId)?.name || '전체';
+      checkUpdatesText.textContent = `'${categoryName}' 업데이트`;
+    };
+
+    const checkUpdates = async () => { /* ... (Updated to use filtered subs) ... */
+      checkUpdatesBtn.disabled = true;
+      checkUpdatesSpinner.classList.remove('hidden');
+      hideError();
+
+      let newFound = false;
+      const subsToCheck = activeCategoryId === 'all' ? subscriptions : subscriptions.filter(s => s.categoryId === activeCategoryId);
+
+      const crawlPromises = subsToCheck.map(async (sub) => {
+        const encodedUrl = encodeURIComponent(sub.url);
+        const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodedUrl}`;
+
+        try {
+          const response = await fetch(apiUrl);
+          if (!response.ok) { throw new Error(`RSS 피드 서버 응답 오류: ${response.status}`); }
+          const data = await response.json();
+          if (data.status !== 'ok') { throw new Error(`RSS 피드 분석 오류: ${data.message}`); }
+
+          (data.items || []).forEach(item => {
+            sub.keywords.forEach(keyword => {
+              if (item.title && item.title.toLowerCase().includes(keyword.toLowerCase())) {
+                const isAlreadyNotified = notifications.some(n => n.link === item.link && n.keyword === keyword);
+                if (!isAlreadyNotified) {
+                  notifications.push({
+                    id: Date.now() + Math.random(),
+                    link: item.link, title: item.title, keyword: keyword,
+                    timestamp: new Date(item.pubDate).getTime() || Date.now(), summary: null,
+                    categoryId: sub.categoryId
+                  });
+                  newFound = true;
+                }
+              }
+            });
+          });
+        } catch (error) {
+          console.error(`[${sub.url}] 크롤링 오류:`, error);
+          const userFriendlyMessage = `'${sub.url}' 피드를 처리하는 중 오류가 발생했습니다. 올바른 RSS 피드 URL인지 확인해주세요.`;
+          showError(userFriendlyMessage);
+        }
+      });
+
+      await Promise.all(crawlPromises);
+
+      if (newFound) {
+        saveUserSpecificData();
+        renderNotifications();
+      }
+
+      checkUpdatesBtn.disabled = false;
+      checkUpdatesSpinner.classList.add('hidden');
+    };
+
+    // --- EVENT LISTENERS ---
+    // Auth
+    loginForm.addEventListener('submit', handleLogin);
+    signupForm.addEventListener('submit', handleSignup);
+    logoutBtn.addEventListener('click', handleLogout);
+    showSignupBtn.addEventListener('click', (e) => { e.preventDefault(); loginForm.parentElement.classList.add('hidden'); signupForm.parentElement.classList.remove('hidden'); loginError.classList.add('hidden'); });
+    showLoginBtn.addEventListener('click', (e) => { e.preventDefault(); signupForm.parentElement.classList.add('hidden'); loginForm.parentElement.classList.remove('hidden'); signupError.classList.add('hidden'); });
+
+    // App
+    addCategoryBtn.addEventListener('click', handleAddCategory);
+    subscriptionForm.addEventListener('submit', handleAddSubscription);
+    checkUpdatesBtn.addEventListener('click', checkUpdates);
+    suggestKeywordsBtn.addEventListener('click', async () => { /* ... same as before ... */
+      const currentKeywords = keywordsInput.value.trim();
+      if (!currentKeywords) {
+        showError("추천을 받으려면 최소 하나 이상의 키워드를 입력해주세요.");
+        return;
+      }
+      const prompt = `기술 블로그 글을 구독하기 위한 키워드입니다. 다음 키워드와 연관성이 높은 기술 키워드 5개를 쉼표로 구분하여 추천해주세요. 다른 설명 없이 키워드만 응답해주세요. 기존 키워드: "${currentKeywords}"`;
+      const suggestions = await callGeminiAPI(prompt, suggestKeywordsBtn);
+      if (suggestions) {
+        const uniqueKeywords = new Set([...currentKeywords.split(',').map(k => k.trim()), ...suggestions.split(',').map(k => k.trim())].filter(Boolean));
+        keywordsInput.value = Array.from(uniqueKeywords).join(', ');
+      }
+    });
+    notificationList.addEventListener('click', async (e) => { /* ... same as before ... */
+      if (e.target.classList.contains('summary-btn')) {
+        const button = e.target;
+        const notifId = Number(button.dataset.id);
+        const summaryDiv = document.getElementById(`summary-${notifId}`);
+        const notification = notifications.find(n => n.id === notifId);
+        if (summaryDiv.style.display === 'block') {
+          summaryDiv.style.display = 'none';
+          button.textContent = '✨ AI 요약 보기';
+          return;
+        }
+        if (notification && notification.summary) {
+          summaryDiv.innerHTML = notification.summary;
+          summaryDiv.style.display = 'block';
+          button.textContent = '요약 숨기기';
+        } else if (notification) {
+          const prompt = `다음 기술 블로그 글의 제목을 보고, 이 글의 핵심 내용을 한 문단으로 요약해주세요. 한국어로 작성해주세요. 제목: "${notification.title}"`;
+          const summary = await callGeminiAPI(prompt, button);
+          if (summary) {
+            notification.summary = summary;
+            saveUserSpecificData();
+            summaryDiv.innerHTML = summary;
+            summaryDiv.style.display = 'block';
+            button.textContent = '요약 숨기기';
+          }
+        }
+      }
+    });
+
+    // Modal Listeners
+    editSubscriptionForm.addEventListener('submit', handleSaveSubscription);
+    cancelEditBtn.addEventListener('click', closeEditModal);
+    editModal.addEventListener('click', e => { if (e.target === editModal) closeEditModal(); });
+
+    // --- INITIAL PAGE LOAD ---
+    currentUser = localStorage.getItem('currentUser');
+    if (currentUser) {
+      initializeAppForUser();
+    } else {
+      showAuthView();
+    }
+  });
+</script>
+</body>
+</html>
+
